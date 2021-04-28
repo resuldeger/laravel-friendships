@@ -195,9 +195,13 @@ trait Friendable
     {
         // if there is a friendship between the two users and the sender is not blocked
         // by the recipient user then delete the friendship
+        /*
+
         if (!$this->isFriendWith($recipient)) {
             return false;
         }
+
+        */
         $friendship = $this->findFriendship($recipient)->first();
         if (is_null($friendship)) return false;
 
@@ -324,6 +328,14 @@ trait Friendable
     public function getFriendRequests()
     {
         return Friendship::whereRecipient($this)->whereStatus(Status::PENDING)->get();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection|Friendship[]
+     */
+    public function getUserRequests()
+    {
+        return Friendship::whereSender($this)->whereStatus(Status::PENDING)->get();
     }
 
     /**
