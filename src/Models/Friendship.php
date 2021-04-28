@@ -43,10 +43,19 @@ class Friendship extends Model
         return $this->morphTo('recipient');
     }
 
+    public function is_sender(): bool
+    {
+        if ($this->sender_id === auth('api')->user()->id) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
-    public function groups() {
+    public function groups()
+    {
         return $this->hasMany(FriendFriendshipGroups::class, 'friendship_id');
     }
 
@@ -110,11 +119,9 @@ class Friendship extends Model
                     })
                     ->orWhere($groupsPivotTable . '.friend_type', '!=', $model->getMorphClass());
             });
-
         }
 
         return $query;
-
     }
 
     /**
@@ -125,7 +132,7 @@ class Friendship extends Model
      */
     public function scopeBetweenModels($query, $sender, $recipient)
     {
-        $query->where(function ($queryIn) use ($sender, $recipient){
+        $query->where(function ($queryIn) use ($sender, $recipient) {
             $queryIn->where(function ($q) use ($sender, $recipient) {
                 $q->whereSender($sender)->whereRecipient($recipient);
             })->orWhere(function ($q) use ($sender, $recipient) {
